@@ -1,0 +1,122 @@
+---
+title: "Milwaukee's September Run"
+output: html_notebook
+---
+
+
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(grid)
+```
+
+
+min 5 IP/RP
+```{r}
+adv <- read_csv('advRp.csv')
+basic <- read_csv('StandRp.csv')
+rp <- left_join(adv, basic)
+mke <- rp %>% filter(Tm=='MIL')
+```
+
+```{r}
+p<- ggplot() +
+  theme_fivethirtyeight() +
+  geom_point(data=rp, aes(x=FIP, y=`K%`), color='light gray') +
+  geom_smooth(data=rp, aes(x=FIP, y=`K%`, color="League Avg"), method='lm', se=FALSE,) +
+  geom_point(data=mke, aes(x=FIP, y=`K%`), color='blue') +
+  geom_smooth(data=mke, aes(x=FIP, y=`K%`, color="Brewers Avg"), method='lm', se=FALSE) +
+  scale_colour_manual(name="Legend", values=c("blue", "black")) +
+  labs(x="FIP", y="K%", title="The Brewers' Unsung Heroes", subtitle= "Milwaukee's relievers were exceptional after Christian Yelich's injury on 9/10", caption= "Source: FanGraphs | By John Strasheim") +
+  theme(plot.title = element_text(size = 15, face = "bold"), 
+        axis.title = element_text(size = 9), 
+        plot.subtitle = element_text(size=10)) +
+  annotate("text", x=-0, y=0.62, label= "Drew Pomeranz", size=3) +
+  annotate("text", x=0.9, y=0.535, label= "Freddy Peralta", size=3) 
+p
+#ggsave('newBullpen.png')
+```
+
+
+min 20IP/RP
+```{r}
+adv2 <- read_csv('AdvRpEarly.csv')
+basic2 <- read_csv('StandRpEarly.csv')
+rp2 <- left_join(adv2, basic2)
+mke2 <- rp2 %>% filter(Tm=='MIL')
+```
+
+
+
+```{r}
+q <- ggplot() +
+  theme_fivethirtyeight() +
+  geom_point(data=rp2, aes(x=FIP, y=`K%`), color='light gray') +
+  geom_smooth(data=rp2, aes(x=FIP, y=`K%`, color="League Avg"), method='lm', se=FALSE,) +
+  geom_point(data=mke2, aes(x=FIP, y=`K%`), color='blue') +
+  geom_smooth(data=mke2, aes(x=FIP, y=`K%`, color="Brewers Avg"), method='lm', se=FALSE) +
+  scale_colour_manual(name="Legend", values=c("blue", "black")) + 
+  labs(x="FIP", y="K%", title="Milwaukee's Bullpen before Yelich's Injury", subtitle= "The Milwaukee Brewer's bullpen was worse before their MVP went down", caption= "Source: FanGraphs | By John Strasheim") +
+  theme(plot.title = element_text(size = 15, face = "bold"), 
+        axis.title = element_text(size = 9), 
+        plot.subtitle = element_text(size=10)) +
+  annotate("text", x=3, y=0.52, label="Josh Hader", size=3)
+q
+#ggsave('oldBullpen.png')
+```
+
+
+```{r}
+oldSB <- read_csv('StanBatEarly.csv')
+oldAB <- read_csv('AdvBatEarly.csv')
+
+oldBat <- left_join(oldAB, oldSB)
+oldMkeBat <- oldBat %>% filter(Tm == 'MIL')
+  
+newSB <- read_csv('StanBat.csv')
+newAB <- read_csv('AdvBat.csv')
+
+newBat <- left_join(newAB, newSB)
+newMkeBat <- newBat %>% filter(Tm == 'MIL')
+```
+
+
+```{r}
+j<- ggplot() +
+  theme_fivethirtyeight() +
+  geom_point(data=newBat, aes(x=`wRC+`, y=AVG), color='light gray') +
+  geom_smooth(data=newBat, aes(x=`wRC+`, y=AVG, color="League Avg"), method='lm', se=FALSE,) +
+  geom_point(data=newMkeBat, aes(x=`wRC+`, y=AVG), color='blue') +
+  geom_smooth(data=newMkeBat, aes(x=`wRC+`, y=AVG, color="Brewers Avg"), method='lm', se=FALSE) +
+  scale_colour_manual(name="Legend", values=c("blue", "black")) +
+  labs(x="wRC+", y="Batting Average", title="Brewers Offense After Yelich went Down", subtitle= "Milwaukee's offense declined after Yelich's season-ending injury", caption= "Source: FanGraphs | By John Strasheim") +
+  theme(plot.title = element_text(size = 15, face = "bold"),
+        axis.title = element_text(size = 9),
+        plot.subtitle = element_text(size=10)) +
+  annotate("text", x=165, y=0.28, label= "Ryan Braun", size=3) +
+  annotate("text", x=155, y=0.355, label= "Keston Hiura", size=3)
+j
+#ggsave('newBat.png')
+```
+
+```{r}
+a<- ggplot() +
+  theme_fivethirtyeight() +
+  geom_point(data=oldBat, aes(x=`wRC+`, y=`AVG`), color='light gray') +
+  geom_smooth(data=oldBat, aes(x=`wRC+`, y=`AVG`, color="League Avg"), method='lm', se=FALSE,) +
+  geom_point(data=oldMkeBat, aes(x=`wRC+`, y=`AVG`), color='blue') +
+  geom_smooth(data=oldMkeBat, aes(x=`wRC+`, y=`AVG`, color="Brewers Avg"), method='lm', se=FALSE) +
+  scale_colour_manual(name="Legend", values=c("blue", "black")) +
+  labs(x="wRC+", y="Batting Average", title="Brewers Offense Before Yelich went Down", subtitle= "Milwaukee's offense thrived before Yelich's season-ending injury", caption= "Source: FanGraphs | By John Strasheim") +
+  theme(plot.title = element_text(size = 15, face = "bold"),
+        axis.title = element_text(size = 9),
+        plot.subtitle = element_text(size=10)) +
+  annotate("text", x=173, y=0.34, label= "Christian Yelich", size=3) +
+  annotate("text", x=138, y=0.313, label= "Keston Hiura", size=3) +
+  annotate("text", x= 40, y= 0.163, label= "Travis Shaw", size=3)
+a
+#ggsave('oldBat.png')
+```
+
+
